@@ -108,6 +108,10 @@ def main():
     update_parser.add_argument("--description",help="New description")
     update_parser.add_argument("--amount",type=float,help="New amount")
 
+    # Delete Command
+    delete_parser = subparsers.add_parser("delete",help="Delete an expense")
+    delete_parser.add_argument("id",type=int,help="Expense ID to delete")
+
 
     args = parser.parse_args()
 
@@ -115,6 +119,8 @@ def main():
         add_expense(args.description,args.amount)
     elif args.command == "update":
         update_expense(args.id,args.description,args.amount)
+    elif args.command == "delete":
+        delete_expense(args.id)
 
 if __name__ == "__main__":
     main()
