@@ -37,6 +37,7 @@ def update_expense(expense_id, description = None, amount = None):
     #check if expense exists
     cursor.execute("SELECT * FROM expenses where id = ?", (expense_id,))
     expense = cursor.fetchone
+
     if not expense:
         print(f"❌ Expense with ID {expense_id} not found.")
         conn.close()
@@ -74,20 +75,17 @@ def delete_expense(expense_id):
     conn=sqlite3.connect("expenses.db")
     cursor = conn.cursor()
 
-    #Check if the expense exists
-    cursor.execute("SELECT * FROM expenses where id = ?", (expense_id,))
-    expense = cursor.fetchone
-    if not expense:
-        print(f"❌ Expense with ID {expense_id} not found.")
-        conn.close()
-        return
-    
     # Delete the expense
     cursor.execute("DELETE FROM expenses WHERE id = ?", (expense_id,))
     conn.commit()
-    conn.close()
+    
+    # Check for deletion to have occurred
+    if cursor.rowcount == 0:
+        print(f"❌ Error: Expense with ID {expense_id} does not exist.")
+    else:
+        print(f"✅ Expense (ID: {expense_id}) deleted successfully!")
 
-    print(f"✅ Expense (ID: {expense_id}) deleted successfully!")
+    conn.close()
 
 #Main function to handle CLI commands
 
