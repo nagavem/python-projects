@@ -76,15 +76,27 @@ def update_expense(expense_id, description = None, amount = None):
 def main():
     parser = argparse.ArgumentParser(description="Expense Tracker CLI")
 
+    # Add subparsers to the main parser
+    subparsers = parser.add_subparsers(dest="command")
+
     #Add command
-    parser.add_argument("add", help="Add a new expense", nargs='?',default=None)
-    parser.add_argument("--description",required=True,help="Description of the expense")
-    parser.add_argument("--amount",type=float,required=True,help="Amount of the expense")
+    add_parser = subparsers.add_parser("add", help="Add a new expense")
+    add_parser.add_argument("--description",required=True,help="Description of the expense")
+    add_parser.add_argument("--amount",type=float,required=True,help="Amount of the expense")
+
+    # Update Command
+    update_parser = subparsers.add_parser("update",help="Update an existing expense")
+    update_parser.add_argument("id",type=int,help="Expense ID to update")
+    update_parser.add_argument("--description",help="New description")
+    update_parser.add_argument("--amount",type=float,help="New amount")
+
 
     args = parser.parse_args()
 
-    if args.add == "add":
+    if args.command == "add":
         add_expense(args.description,args.amount)
+    elif args.command == "update":
+        update_expense(args.id,args.description,args.amount)
 
 if __name__ == "__main__":
     main()
