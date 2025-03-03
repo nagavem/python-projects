@@ -33,17 +33,8 @@ def add_expense(description,amount):
 def update_expense(expense_id, description = None, amount = None):
     conn=sqlite3.connect("expenses.db")
     cursor = conn.cursor()
-
-    #check if expense exists
-    cursor.execute("SELECT * FROM expenses where id = ?", (expense_id,))
-    expense = cursor.fetchone
-
-    if not expense:
-        print(f"❌ Expense with ID {expense_id} not found.")
-        conn.close()
-        return
-    
-    #prepare the update query
+ 
+    #prepare the update query dynamically
     updates = []
     values = []
 
@@ -60,15 +51,22 @@ def update_expense(expense_id, description = None, amount = None):
         conn.close()
         return
     
-    values.append(expense_id)
+    values.append(expense_id) # Append ID at the end for the where clause
+
     query = f"UPDATE expenses SET {', '.join(updates)} WHERE id = ?"
 
     # Execute the update query
     cursor.execute(query,values)
     conn.commit()
-    conn.close()
+    
+    #Check if any row was updated, to avoid updating nonexistent id's
 
-    print(f"✅ Expense (ID: {expense_id}) updated successfully!")
+    if cursor.rowcount == 0:
+        print(f"❌ Error: Expense with ID {expense_id} does not exist.")
+    else:
+        print(f"✅ Expense (ID: {expense_id}) updated successfully!")
+
+    conn.close()
 
 #Fn to delete an expense
 def delete_expense(expense_id):
